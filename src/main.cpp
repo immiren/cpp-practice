@@ -1,98 +1,83 @@
-#include "raylib.h"
+#include <raylib.h>
 #include <iostream>
+#include <vector>
 
-#pragma region imgui
-#include "imgui.h"
-#include "rlImGui.h"
-#include "imguiThemes.h"
-#pragma endregion
+int cellSize = 100;
+int cellCountX = 15;
+int cellCountY = 10;
 
+float g = 9.81f;
 
+struct Player {
+	Vector2 position = { 5.0f * cellSize, 5.0f * cellSize };
+	Vector2 direction = { 1,0 };
+	Vector2 velocity = { 0,0 };
+	Color color = { 157, 19, 217, 255 };
+	float speed = 7;
+	bool grounded = false;
+} player;
 
-int main(void)
-{
+Color skyColor = { 107,213,255,255 };
+Color grassColor = { 6, 169, 35,255 };
+Color groundColor = { 73, 44, 13 ,255 };
+int grassLevel = 8;
+int groundLevel = grassLevel+1;
 
+void drawCell(int posX, int posY, Color c) {
+	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
+}
+
+int main() {
+	// Setup
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-	InitWindow(800, 450, "raylib [core] example - basic window");
+	SetTargetFPS(60);
+	InitWindow(cellSize * cellCountX, cellSize * cellCountY, "test window");
 
-#pragma region imgui
-	rlImGuiSetup(true);
-
-	//you can use whatever imgui theme you like!
-	//ImGui::StyleColorsDark();
-	//imguiThemes::yellow();
-	//imguiThemes::gray();
-	imguiThemes::green();
-	//imguiThemes::red();
-	//imguiThemes::embraceTheDarkness();
-
-
-	ImGuiIO &io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-	io.FontGlobalScale = 2;
-
-	ImGuiStyle &style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		//style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 0.5f;
-		//style.Colors[ImGuiCol_DockingEmptyBg].w = 0.f;
-	}
-
-#pragma endregion
-
-
-
-	while (!WindowShouldClose())
-	{
+	// Game loop
+	while (!WindowShouldClose()) {
 		BeginDrawing();
-		ClearBackground(RAYWHITE);
+		ClearBackground(skyColor);
 
+		// ground
+		DrawRectangle(0, grassLevel* cellSize, cellCountX * cellSize, cellSize, grassColor);
+		DrawRectangle(0, groundLevel * cellSize, cellCountX * cellSize, (10 - groundLevel) * cellSize, groundColor);
 
-	#pragma region imgui
-		rlImGuiBegin();
+		// movement
+		player.direction = { 0,0 };
+		if (IsKeyDown(KEY_UP) && player.grounded) { player.direction.y = -50; }
+		if (IsKeyDown(KEY_LEFT)) { player.direction.x = -1; }
+		if (IsKeyDown(KEY_RIGHT)) { player.direction.x = 1; }
+		// TODO vaiha käyttää velocity
 
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, {});
-		ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, {});
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-		ImGui::PopStyleColor(2);
-	#pragma endregion
+		player.position.x += player.direction.x * player.speed;
+		player.position.y += player.direction.y * player.speed + g;
 
+		if (player.position.x > (cellCountX - 1) * cellSize) { player.position.x = (cellCountX - 1) * cellSize; }
+		if (player.position.x < 0) { player.position.x = 0; }
+		if (player.position.y > (grassLevel - 1) * cellSize) { player.position.y = (grassLevel - 1) * cellSize; }
+		if (player.position.y < 0) { player.position.y = 0; }
 
-		ImGui::Begin("Test");
+		// grounded check
+		if (player.position.y > ((grassLevel - 1) * cellSize -10)) { player.grounded = true; }
+		else { player.grounded = false; }
 
-		ImGui::Text("Hello");
-		ImGui::Button("Button");
-		ImGui::Button("Button2");
-
-		ImGui::End();
-
-
-		DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-
-
-	#pragma region imgui
-		rlImGuiEnd();
-
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-		}
-	#pragma endregion
+		if (player.grounded) { DrawText("grounded", 100, 100, 20, BLACK); }
+		else { DrawText("not grounded", 100, 100, 20, BLACK); }
+		// draw player
+		DrawRectangle(player.position.x, player.position.y, cellSize, cellSize, player.color);
 
 		EndDrawing();
 	}
-
-
-#pragma region imgui
-	rlImGuiShutdown();
-#pragma endregion
-
-
-
+	
 	CloseWindow();
 
 	return 0;
 }
+
+
+// TODO:
+// - jump
+// - gravity
+//	- bonus: check if tile under -> apply only if in air
+//
+//
