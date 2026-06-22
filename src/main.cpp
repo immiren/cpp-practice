@@ -8,31 +8,9 @@ int cellSize = 100;	// size in px
 int cellCountX = 10;
 int cellCountY = 10;
 
-vector<Vector2> snake;
-Vector2 fruitPos = { 0,0 };
+Vector2 selectedCell = { 0,0 };
 
 bool gameOver = false;
-
-void setFruit() {
-	while (true) {
-		fruitPos.x = GetRandomValue(0, cellCountX - 1);
-		fruitPos.y = GetRandomValue(0, cellCountY - 1);
-
-		bool touchesSnake = false;
-
-		// iterator? tarkista
-		for (auto& i : snake) {
-			if (i.x == fruitPos.x && i.y == fruitPos.y) {
-				touchesSnake = true;
-				break;
-			}
-		}
-
-		if (!touchesSnake) {
-			break;
-		}
-	}
-}
 
 void drawCell(int posX, int posY, Color c) {
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
@@ -74,14 +52,9 @@ int main(void) {
 	c.a = 255;
 
 	Vector2 direction = { 1, 0 };
-	Vector2 newDirection = { 1, 0 };
 
 	const float moveTimeDuration = 0.2;
 	float timer = moveTimeDuration;
-
-	snake.push_back({ 5,5 });
-
-	setFruit();
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -92,58 +65,21 @@ int main(void) {
 		if (!gameOver) {
 
 			// Input
-			if (IsKeyDown(KEY_UP)) { newDirection = { 0,-1 }; }
-			if (IsKeyDown(KEY_DOWN)) { newDirection = { 0,1 }; }
-			if (IsKeyDown(KEY_LEFT)) { newDirection = { -1,0 }; }
-			if (IsKeyDown(KEY_RIGHT)) { newDirection = { 1,0 }; }
+			direction = { 0,0 };
+			if (IsKeyDown(KEY_UP)) { direction = { 0,-1 }; }
+			if (IsKeyDown(KEY_DOWN)) { direction = { 0,1 }; }
+			if (IsKeyDown(KEY_LEFT)) { direction = { -1,0 }; }
+			if (IsKeyDown(KEY_RIGHT)) { direction = { 1,0 }; }
 
 			// Movement	
 			timer -= GetFrameTime();
 			if (timer <= 0) {
 				timer += moveTimeDuration;
 
-				for (int i = snake.size() - 1; i > 0; i--) {
-					snake[i] = snake[i - 1];
-				}
-
-				// block backtracking
-				if (newDirection.x == -direction.x && newDirection.y == -newDirection.y) {
-					newDirection = direction;
-				}
-				direction = newDirection;
-				snake[0].x += direction.x;
-				snake[0].y += direction.y;
-
-				// wrap around
-				for (auto& i : snake) {
-					if (i.x >= cellCountX) { i.x = 0; }
-					if (i.y >= cellCountY) { i.y = 0; }
-					if (i.x < 0) { i.x = cellCountX - 1; }
-					if (i.y < 0) { i.y = cellCountY - 1; }
-				}
-
-				// detect collision
-				for (int i = 1; i < snake.size(); i++) {
-					if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
-						gameOver = true;
-						snake.clear();
-						snake.push_back({ 5,5 });
-					}
-				}
+				selectedCell.x += direction.x;
+				selectedCell.y += direction.y;
 			}
-
-			if (snake[0].x == fruitPos.x && snake[0].y == fruitPos.y) {
-				setFruit();
-				snake.push_back(snake[snake.size() - 1]);
-			}
-
-			//snake
-			for (auto& i : snake) {
-				drawCell(i.x, i.y, GREEN);
-			}
-
-			//fruit
-			drawCell(fruitPos.x, fruitPos.y, RED);
+			drawCell(selectedCell.x, selectedCell.y, GREEN);
 		}
 		else {
 			DrawText("Game Over!", windowWidth / 2, windowHeight / 2, 20, RED);
@@ -156,3 +92,17 @@ int main(void) {
 
 	return 0;
 }
+
+// TODO
+// - numerot
+//	- placeholder
+//  - oikeet
+// - grid
+// - numerotyypit (eri väriset)
+//	- valmiit -> ei voi muuttaa
+//  - uudet -> voi muuttaa
+// - input numero
+//	- testaa onko ok
+// - random numerot
+//	- tarkista että valid?
+//
