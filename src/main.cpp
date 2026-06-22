@@ -8,12 +8,16 @@ int cellCountY = 10;
 
 float g = 9.81f;
 
+float dt = 1.0 / 60.0;
+
 struct Player {
 	Vector2 position = { 5.0f * cellSize, 5.0f * cellSize };
 	Vector2 direction = { 1,0 };
 	Vector2 velocity = { 0,0 };
 	Color color = { 157, 19, 217, 255 };
+	float maxSpeed = 10;
 	float speed = 7;
+	float acceleration = 2;
 	bool grounded = false;
 } player;
 
@@ -44,13 +48,23 @@ int main() {
 
 		// movement
 		player.direction = { 0,0 };
-		if (IsKeyDown(KEY_UP) && player.grounded) { player.direction.y = -50; }
-		if (IsKeyDown(KEY_LEFT)) { player.direction.x = -1; }
-		if (IsKeyDown(KEY_RIGHT)) { player.direction.x = 1; }
+		if (IsKeyDown(KEY_UP) && player.grounded) { player.velocity.y = 50; }
+		if (IsKeyDown(KEY_LEFT)) {
+			player.velocity.x = player.velocity.x + (-player.maxSpeed * player.acceleration * dt);
+			//player.direction.x = -1;
+		}
+		if (IsKeyDown(KEY_RIGHT)) {
+			player.velocity.x = player.velocity.x + (player.maxSpeed * player.acceleration * dt);
+			//player.direction.x = 1;
+		}
+
+		// cap velocity
+		if (player.velocity.x > player.maxSpeed) { player.velocity.x = player.maxSpeed; }
+		else if (player.velocity.x < -player.maxSpeed) { player.velocity.x = -player.maxSpeed; }
 		// TODO vaiha käyttää velocity
 
-		player.position.x += player.direction.x * player.speed;
-		player.position.y += player.direction.y * player.speed + g;
+		player.position.x += player.velocity.x * player.speed;
+		player.position.y += player.velocity.y * player.speed + g;
 
 		if (player.position.x > (cellCountX - 1) * cellSize) { player.position.x = (cellCountX - 1) * cellSize; }
 		if (player.position.x < 0) { player.position.x = 0; }
