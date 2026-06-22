@@ -15,9 +15,10 @@ struct Player {
 	Vector2 direction = { 1,0 };
 	Vector2 velocity = { 0,0 };
 	Color color = { 157, 19, 217, 255 };
-	float maxSpeed = 10;
-	float speed = 7;
-	float acceleration = 2;
+	float maxSpeed = 5;
+	float speed = 5;
+	float acceleration = 3;
+	float deceleration = 2;
 	bool grounded = false;
 } player;
 
@@ -25,7 +26,7 @@ Color skyColor = { 107,213,255,255 };
 Color grassColor = { 6, 169, 35,255 };
 Color groundColor = { 73, 44, 13 ,255 };
 int grassLevel = 8;
-int groundLevel = grassLevel+1;
+int groundLevel = grassLevel + 1;
 
 void drawCell(int posX, int posY, Color c) {
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
@@ -39,50 +40,66 @@ int main() {
 
 	// Game loop
 	while (!WindowShouldClose()) {
+		// setup -----------------------------------------
 		BeginDrawing();
 		ClearBackground(skyColor);
 
 		// ground
-		DrawRectangle(0, grassLevel* cellSize, cellCountX * cellSize, cellSize, grassColor);
+		DrawRectangle(0, grassLevel * cellSize, cellCountX * cellSize, cellSize, grassColor);
 		DrawRectangle(0, groundLevel * cellSize, cellCountX * cellSize, (10 - groundLevel) * cellSize, groundColor);
 
-		// movement
+		// movement -----------------------------------------
 		player.direction = { 0,0 };
 		if (IsKeyDown(KEY_UP) && player.grounded) { player.velocity.y = 50; }
 		if (IsKeyDown(KEY_LEFT)) {
 			player.velocity.x = player.velocity.x + (-player.maxSpeed * player.acceleration * dt);
-			//player.direction.x = -1;
 		}
 		if (IsKeyDown(KEY_RIGHT)) {
 			player.velocity.x = player.velocity.x + (player.maxSpeed * player.acceleration * dt);
-			//player.direction.x = 1;
+		}
+		if (player.velocity.x < 0) {
+			player.velocity.x = player.velocity.x + (player.maxSpeed * player.deceleration * dt);
+			if (player.velocity.x > 0) {
+				player.velocity.x = 0;
+			}
+		}
+		else if (player.velocity.x > 0) {
+			player.velocity.x = player.velocity.x - (player.maxSpeed * player.deceleration * dt);
+			if (player.velocity.x < 0) { player.velocity.x = 0; }
 		}
 
 		// cap velocity
 		if (player.velocity.x > player.maxSpeed) { player.velocity.x = player.maxSpeed; }
 		else if (player.velocity.x < -player.maxSpeed) { player.velocity.x = -player.maxSpeed; }
-		// TODO vaiha käyttää velocity
 
+		// update position
 		player.position.x += player.velocity.x * player.speed;
 		player.position.y += player.velocity.y * player.speed + g;
 
-		if (player.position.x > (cellCountX - 1) * cellSize) { player.position.x = (cellCountX - 1) * cellSize; }
-		if (player.position.x < 0) { player.position.x = 0; }
+		// chain to screen
+		if (player.position.x > (cellCountX - 1) * cellSize) {
+			player.position.x = (cellCountX - 1) * cellSize;
+			player.velocity.x = 0;
+		}
+		if (player.position.x < 0) {
+			player.position.x = 0;
+			player.velocity.x = 0;
+		}
 		if (player.position.y > (grassLevel - 1) * cellSize) { player.position.y = (grassLevel - 1) * cellSize; }
 		if (player.position.y < 0) { player.position.y = 0; }
 
-		// grounded check
-		if (player.position.y > ((grassLevel - 1) * cellSize -10)) { player.grounded = true; }
+		// grounded check -----------------------------------------
+		if (player.position.y > ((grassLevel - 1) * cellSize - 10)) { player.grounded = true; }
 		else { player.grounded = false; }
 
 		if (player.grounded) { DrawText("grounded", 100, 100, 20, BLACK); }
 		else { DrawText("not grounded", 100, 100, 20, BLACK); }
-		// draw player
+		// draw player -----------------------------------------
 		DrawRectangle(player.position.x, player.position.y, cellSize, cellSize, player.color);
 
 		EndDrawing();
 	}
-	
+
 	CloseWindow();
 
 	return 0;
