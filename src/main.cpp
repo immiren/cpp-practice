@@ -1,19 +1,22 @@
 #include <raylib.h>
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
 int cellSize = 100;	// size in px
-int cellCountX = 10;
-int cellCountY = 10;
+int cellCountX = 9;
+int cellCountY = 9;
 
 Vector2 selectedCell = { 0,0 };
 
 bool gameOver = false;
 
 void drawCell(int posX, int posY, Color c) {
+	std::string text = std::to_string(posX) + ", " + std::to_string(posY);
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
+	DrawText(text.c_str(), posX * cellSize + 10, posY * cellSize+ 10, 20, BLACK);
 }
 
 void drawBackground() {
@@ -53,7 +56,7 @@ int main(void) {
 
 	Vector2 direction = { 1, 0 };
 
-	const float moveTimeDuration = 0.2;
+	const float moveTimeDuration = 0.1;
 	float timer = moveTimeDuration;
 
 	while (!WindowShouldClose()) {
