@@ -6,17 +6,35 @@
 using namespace std;
 
 int cellSize = 100;	// size in px
-int cellCountX = 9;
-int cellCountY = 9;
+const int cellCountX = 9;
+const int cellCountY = 9;
 
-Vector2 selectedCell = { 0,0 };
+int cells[cellCountX][cellCountY] = {
+	{0,1,0,0,0,4,0,0,0},
+	{4,2,0,0,0,0,0,0,0},
+	{0,3,0,0,0,0,4,0,0},
+	{0,4,5,6,0,0,0,0,0},
+	{0,0,0,7,0,0,0,0,4},
+	{0,0,0,4,0,0,0,0,0},
+	{0,0,4,0,0,0,0,0,0},
+	{0,0,0,0,4,0,0,0,0},
+	{0,0,0,0,0,0,0,4,0}
+};
+// TODO flip to correct x and y values
+
+Vector2 cursorLocation = { 0,0 };
 
 bool gameOver = false;
 
 void drawCell(int posX, int posY, Color c) {
-	std::string text = std::to_string(posX) + ", " + std::to_string(posY);
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
-	DrawText(text.c_str(), posX * cellSize + 10, posY * cellSize+ 10, 20, BLACK);
+	
+	// draw numbers on cells with values
+	const int* cell = &cells[posX][posY];
+	if (*cell != 0) {
+		std::string text = std::to_string(*cell);
+		DrawText(text.c_str(), posX * cellSize + 25, posY * cellSize + 10, 90, BLACK);
+	}
 }
 
 void drawBackground() {
@@ -73,16 +91,20 @@ int main(void) {
 			if (IsKeyDown(KEY_DOWN)) { direction = { 0,1 }; }
 			if (IsKeyDown(KEY_LEFT)) { direction = { -1,0 }; }
 			if (IsKeyDown(KEY_RIGHT)) { direction = { 1,0 }; }
+			if (IsKeyDown(KEY_ENTER)) {
+				// next time: enter key to input values + ehk cell tyypitys?
+				// input: switch to input mode somehow? vai miten t‰‰ ois hyv‰ handlaa
+			}
 
 			// Movement	
 			timer -= GetFrameTime();
 			if (timer <= 0) {
 				timer += moveTimeDuration;
 
-				selectedCell.x += direction.x;
-				selectedCell.y += direction.y;
+				cursorLocation.x += direction.x;
+				cursorLocation.y += direction.y;
 			}
-			drawCell(selectedCell.x, selectedCell.y, GREEN);
+			drawCell(cursorLocation.x, cursorLocation.y, GREEN);
 		}
 		else {
 			DrawText("Game Over!", windowWidth / 2, windowHeight / 2, 20, RED);
@@ -98,9 +120,11 @@ int main(void) {
 
 // TODO
 // - numerot
-//	- placeholder
+//	- placeholder DONE
+//	 - fiksaa x ja y
 //  - oikeet
-// - grid
+// - grid DONE
+// - grid lines
 // - numerotyypit (eri v‰riset)
 //	- valmiit -> ei voi muuttaa
 //  - uudet -> voi muuttaa
