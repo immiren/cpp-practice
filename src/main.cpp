@@ -22,7 +22,7 @@ int cells[cellCountX][cellCountY] = {
 };
 // TODO flip to correct x and y values
 
-Vector2 cursorLocation = { 0,0 };
+vector<int> cursorLocation = { 0,0 };
 
 bool gameOver = false;
 
@@ -91,20 +91,27 @@ int main(void) {
 			if (IsKeyDown(KEY_DOWN)) { direction = { 0,1 }; }
 			if (IsKeyDown(KEY_LEFT)) { direction = { -1,0 }; }
 			if (IsKeyDown(KEY_RIGHT)) { direction = { 1,0 }; }
-			if (IsKeyDown(KEY_ENTER)) {
-				// next time: enter key to input values + ehk cell tyypitys?
-				// input: switch to input mode somehow? vai miten t‰‰ ois hyv‰ handlaa
-			}
+
+			// number input: toimii mut paranna
+			if (IsKeyPressed(KEY_ONE))  cells[cursorLocation[0]][cursorLocation[1]] = 1;
+			if (IsKeyPressed(KEY_TWO))  cells[cursorLocation[0]][cursorLocation[1]] = 2;
+			if (IsKeyPressed(KEY_THREE))  cells[cursorLocation[0]][cursorLocation[1]] = 3;
+			if (IsKeyPressed(KEY_FOUR))  cells[cursorLocation[0]][cursorLocation[1]] = 4;
+			if (IsKeyPressed(KEY_FIVE))  cells[cursorLocation[0]][cursorLocation[1]] = 5;
+			if (IsKeyPressed(KEY_SIX))  cells[cursorLocation[0]][cursorLocation[1]] = 6;
+			if (IsKeyPressed(KEY_SEVEN))  cells[cursorLocation[0]][cursorLocation[1]] = 7;
+			if (IsKeyPressed(KEY_EIGHT))  cells[cursorLocation[0]][cursorLocation[1]] = 8;
+			if (IsKeyPressed(KEY_NINE))  cells[cursorLocation[0]][cursorLocation[1]] = 9;
 
 			// Movement	
 			timer -= GetFrameTime();
 			if (timer <= 0) {
 				timer += moveTimeDuration;
 
-				cursorLocation.x += direction.x;
-				cursorLocation.y += direction.y;
+				cursorLocation[0] += direction.x;
+				cursorLocation[1] += direction.y;
 			}
-			drawCell(cursorLocation.x, cursorLocation.y, GREEN);
+			drawCell(cursorLocation[0], cursorLocation[1], GREEN);
 		}
 		else {
 			DrawText("Game Over!", windowWidth / 2, windowHeight / 2, 20, RED);
@@ -128,8 +135,9 @@ int main(void) {
 // - numerotyypit (eri v‰riset)
 //	- valmiit -> ei voi muuttaa
 //  - uudet -> voi muuttaa
-// - input numero
-//	- testaa onko ok
+// - input numero DONE
+//	- testaa onko nro ok
 // - random numerot
 //	- tarkista ett‰ valid?
+// - n‰timpi highlight + row ja column + muut samat numerot
 //
