@@ -25,6 +25,7 @@ int cells[cellCountX][cellCountY] = {
 vector<int> cursorLocation = { 0,0 };
 
 bool gameOver = false;
+bool redraw = true;
 
 void drawHighlight(int posX, int posY) {
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, SKYBLUE);
@@ -89,8 +90,6 @@ int main(void) {
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
-		ClearBackground(WHITE);
-
 		if (!gameOver) {
 
 			// Input
@@ -99,17 +98,23 @@ int main(void) {
 			if (IsKeyDown(KEY_DOWN)) { direction = { 0,1 }; }
 			if (IsKeyDown(KEY_LEFT)) { direction = { -1,0 }; }
 			if (IsKeyDown(KEY_RIGHT)) { direction = { 1,0 }; }
+			if (direction.x != 0 || direction.y != 0) redraw = true;
 
 			// number input: toimii mut paranna
-			if (IsKeyPressed(KEY_ONE))  cells[cursorLocation[0]][cursorLocation[1]] = 1;
-			if (IsKeyPressed(KEY_TWO))  cells[cursorLocation[0]][cursorLocation[1]] = 2;
-			if (IsKeyPressed(KEY_THREE))  cells[cursorLocation[0]][cursorLocation[1]] = 3;
-			if (IsKeyPressed(KEY_FOUR))  cells[cursorLocation[0]][cursorLocation[1]] = 4;
-			if (IsKeyPressed(KEY_FIVE))  cells[cursorLocation[0]][cursorLocation[1]] = 5;
-			if (IsKeyPressed(KEY_SIX))  cells[cursorLocation[0]][cursorLocation[1]] = 6;
-			if (IsKeyPressed(KEY_SEVEN))  cells[cursorLocation[0]][cursorLocation[1]] = 7;
-			if (IsKeyPressed(KEY_EIGHT))  cells[cursorLocation[0]][cursorLocation[1]] = 8;
-			if (IsKeyPressed(KEY_NINE))  cells[cursorLocation[0]][cursorLocation[1]] = 9;
+			int input = 0;
+			if (IsKeyPressed(KEY_ONE))  input = 1;
+			if (IsKeyPressed(KEY_TWO))  input = 2;
+			if (IsKeyPressed(KEY_THREE))  input = 3;
+			if (IsKeyPressed(KEY_FOUR))  input = 4;
+			if (IsKeyPressed(KEY_FIVE))  input = 5;
+			if (IsKeyPressed(KEY_SIX))  input = 6;
+			if (IsKeyPressed(KEY_SEVEN))  input = 7;
+			if (IsKeyPressed(KEY_EIGHT))  input = 8;
+			if (IsKeyPressed(KEY_NINE))  input = 9;
+			if (input != 0) {
+				cells[cursorLocation[0]][cursorLocation[1]] = input;
+				redraw = true;
+			}
 
 			// Movement	
 			timer -= GetFrameTime();
@@ -119,9 +124,13 @@ int main(void) {
 				cursorLocation[0] += direction.x;
 				cursorLocation[1] += direction.y;
 			}
-			drawHighlight(cursorLocation[0], cursorLocation[1]);
+			if (redraw) {
+				ClearBackground(WHITE);
 
-			drawBackground();
+				drawHighlight(cursorLocation[0], cursorLocation[1]);
+
+				drawBackground();
+			}
 		}
 		else {
 			DrawText("Game Over!", windowWidth / 2, windowHeight / 2, 20, RED);
