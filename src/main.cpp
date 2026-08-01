@@ -26,14 +26,31 @@ vector<int> cursorLocation = { 0,0 };
 
 bool gameOver = false;
 
-void drawCell(int posX, int posY, Color c) {
-	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
-	
+void drawHighlight(int posX, int posY) {
+	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, SKYBLUE);
+}
+
+void drawCell(int posX, int posY) {
+	int lineSize = 3;
+
+	// grey borders
+	if (posX != 2 && posX != 5 && posX != 8) DrawRectangle((posX + 1) * cellSize, (posY + 1) * cellSize, lineSize, cellSize, LIGHTGRAY);
+	if (posX != 3 && posX != 6 && posX != 0) DrawRectangle(posX * cellSize, posY * cellSize, lineSize, cellSize, LIGHTGRAY);
+	if (posY != 2 && posY != 5 && posY != 8) DrawRectangle(posX * cellSize - lineSize, (posY + 1) * cellSize, cellSize, lineSize, LIGHTGRAY);
+	if (posY != 3 && posY != 6 && posY != 0) DrawRectangle(posX * cellSize, posY * cellSize, cellSize, lineSize, LIGHTGRAY);
+
+	// black borders
+	if (posX == 2 || posX == 5 || posX == 8) DrawRectangle((posX + 1) * cellSize, (posY + 1) * cellSize, lineSize, cellSize, BLACK);
+	if (posX == 3 || posX == 6 || posX == 0) DrawRectangle(posX * cellSize, posY * cellSize, lineSize, cellSize, BLACK);
+	if (posY == 2 || posY == 5 || posY == 8) DrawRectangle(posX * cellSize - lineSize, (posY + 1) * cellSize, cellSize, lineSize, BLACK);
+	if (posY == 3 || posY == 6 || posY == 0) DrawRectangle(posX * cellSize, posY * cellSize, cellSize, lineSize, BLACK);
+
 	// draw numbers on cells with values
 	const int* cell = &cells[posX][posY];
 	if (*cell != 0) {
 		std::string text = std::to_string(*cell);
-		DrawText(text.c_str(), posX * cellSize + 25, posY * cellSize + 10, 90, BLACK);
+		if (*cell == 1) DrawText(text.c_str(), posX * cellSize + 40, posY * cellSize + 10, 90, BLACK);
+		else DrawText(text.c_str(), posX * cellSize + 30, posY * cellSize + 10, 90, BLACK);
 	}
 }
 
@@ -41,15 +58,8 @@ void drawBackground() {
 	Color tile;
 
 	for (int x = 0; x < cellCountX; x++) {
-		for (int y = 0; y < cellCountY; y++) {
-
-			if ((x + y) % 2 == 1) {
-				tile = { 100,100,100,255 };
-			}
-			else {
-				tile = { 200,200,200,255 };
-			}
-			drawCell(x, y, tile);
+		for (int y = 0; y < cellCountY; y++) {			
+			drawCell(x, y);
 		}
 	}
 }
@@ -79,9 +89,7 @@ int main(void) {
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
-		ClearBackground({50,50,50,255});
-
-		drawBackground();
+		ClearBackground(WHITE);
 
 		if (!gameOver) {
 
@@ -111,7 +119,9 @@ int main(void) {
 				cursorLocation[0] += direction.x;
 				cursorLocation[1] += direction.y;
 			}
-			drawCell(cursorLocation[0], cursorLocation[1], GREEN);
+			drawHighlight(cursorLocation[0], cursorLocation[1]);
+
+			drawBackground();
 		}
 		else {
 			DrawText("Game Over!", windowWidth / 2, windowHeight / 2, 20, RED);
@@ -131,7 +141,7 @@ int main(void) {
 //	 - fiksaa x ja y
 //  - oikeet
 // - grid DONE
-// - grid lines
+// - grid lines DONE
 // - numerotyypit (eri väriset)
 //	- valmiit -> ei voi muuttaa
 //  - uudet -> voi muuttaa
@@ -139,5 +149,6 @@ int main(void) {
 //	- testaa onko nro ok
 // - random numerot
 //	- tarkista että valid?
-// - nätimpi highlight + row ja column + muut samat numerot
+// - nätimpi highlight DONE
+// - highlight row ja column + muut samat numerot
 //
