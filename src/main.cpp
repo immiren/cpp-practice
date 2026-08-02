@@ -53,9 +53,16 @@ void fillCells() {
 }
 
 void drawHighlight(int posX, int posY) {
-	Color c = SKYBLUE;
-	if (takingNotes) c = PURPLE;
+	Color c = { 145, 220, 255,255 };
+	if (takingNotes) c = { 234, 184, 255, 255 };
+
+	// row & cell highlight
+	DrawRectangle(posX * cellSize, 0, cellSize, cellCountX * cellSize, { 230,230,230,255 });
+	DrawRectangle(0, posY * cellSize, cellCountX * cellSize, cellSize, {230,230,230,255});
+	
+	// main highlight
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
+
 }
 
 void drawCell(int posX, int posY) {
@@ -164,7 +171,7 @@ int main(void) {
 			if (IsKeyPressed(KEY_EIGHT))  input = 8;
 			if (IsKeyPressed(KEY_NINE))  input = 9;
 			if (input != 0) {
-				// switch modes: pen/
+				// switch modes: pen/pencil
 				if (cells[cursorLocation[0]][cursorLocation[1]].prefilled == false) {
 					if (takingNotes) cells[cursorLocation[0]][cursorLocation[1]].notes[input - 1] = !cells[cursorLocation[0]][cursorLocation[1]].notes[input - 1];
 					else cells[cursorLocation[0]][cursorLocation[1]].value = input;
