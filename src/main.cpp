@@ -36,7 +36,7 @@ bool gameOver = false;
 bool redraw = true;
 bool takingNotes = false;
 
-void fillCells() {
+static void fillCells() {
 	for (int x = 0; x < cellCountX; x++) {
 		for (int y = 0; y < cellCountY; y++) {
 			bool prefilled = false;
@@ -52,7 +52,7 @@ void fillCells() {
 	}
 }
 
-void drawHighlight(int posX, int posY) {
+static void drawHighlight(int posX, int posY) {
 	Color c = { 145, 220, 255,255 };
 	if (takingNotes) c = { 234, 184, 255, 255 };
 
@@ -117,8 +117,6 @@ void drawCell(int posX, int posY) {
 }
 
 void drawBackground() {
-	Color tile;
-
 	for (int x = 0; x < cellCountX; x++) {
 		for (int y = 0; y < cellCountY; y++) {			
 			drawCell(x, y);
