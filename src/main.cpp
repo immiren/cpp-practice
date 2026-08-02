@@ -183,9 +183,13 @@ int main(void) {
 			timer -= GetFrameTime();
 			if (timer <= 0) {
 				timer += moveTimeDuration;
-
-				cursorLocation[0] += direction.x;
-				cursorLocation[1] += direction.y;
+				
+				if (cursorLocation[0] + direction.x < cellCountX && cursorLocation[0] + direction.x >= 0) {
+					cursorLocation[0] += direction.x;
+				}
+				if (cursorLocation[1] + direction.y < cellCountX && cursorLocation[1] + direction.y >= 0) {
+					cursorLocation[1] += direction.y;
+				}
 			}
 			if (redraw) {
 				ClearBackground(WHITE);
