@@ -33,7 +33,6 @@ int cellNumbers[cellCountX][cellCountY] = {
 vector<int> cursorLocation = { 0,0 };
 
 bool gameOver = false;
-bool redraw = true;
 bool takingNotes = false;
 
 static void fillCells() {
@@ -86,8 +85,20 @@ void drawCell(int posX, int posY) {
 		Color c = BLACK;
 		if (!cells[posX][posY].prefilled) c = DARKPURPLE;
 		std::string text = std::to_string(*cellValue);
-		if (*cellValue == 1) DrawText(text.c_str(), posX * cellSize + 40, posY * cellSize + 10, 90, c);
-		else DrawText(text.c_str(), posX * cellSize + 30, posY * cellSize + 10, 90, c);
+
+		int letterWidth = 90;
+		int xOffset = 0;
+		int yOffset = 11;
+
+		// highlight selected numbers
+		if (*cellValue == cells[cursorLocation[0]][cursorLocation[1]].value) {
+			letterWidth += 10;
+			xOffset += -3;
+			yOffset += -3;
+		} 
+		// shift 1-cells to the right for symmetry
+		if (*cellValue == 1) DrawText(text.c_str(), posX * cellSize + 40 + xOffset, posY * cellSize + yOffset, letterWidth, c);
+		else DrawText(text.c_str(), posX * cellSize + 30 + xOffset, posY * cellSize + yOffset, letterWidth, c);
 	}
 	else {
 		// draw notes
@@ -142,19 +153,16 @@ int main(void) {
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		if (!gameOver) {
-
 			// Input
 			direction = { 0,0 };
 			if (IsKeyDown(KEY_UP)) { direction = { 0,-1 }; }
 			if (IsKeyDown(KEY_DOWN)) { direction = { 0,1 }; }
 			if (IsKeyDown(KEY_LEFT)) { direction = { -1,0 }; }
 			if (IsKeyDown(KEY_RIGHT)) { direction = { 1,0 }; }
-			if (direction.x != 0 || direction.y != 0) redraw = true;
 
 			// switch between writing and notetaking
 			if (IsKeyPressed(KEY_P)) {
 				takingNotes = !takingNotes;
-				redraw = true;
 			}
 
 			// number input: toimii mut paranna
@@ -174,7 +182,6 @@ int main(void) {
 					if (takingNotes) cells[cursorLocation[0]][cursorLocation[1]].notes[input - 1] = !cells[cursorLocation[0]][cursorLocation[1]].notes[input - 1];
 					else cells[cursorLocation[0]][cursorLocation[1]].value = input;
 				}
-				redraw = true;
 			}
 
 			// Movement	
@@ -189,13 +196,11 @@ int main(void) {
 					cursorLocation[1] += direction.y;
 				}
 			}
-			if (redraw) {
-				ClearBackground(WHITE);
+			ClearBackground(WHITE);
 
-				drawHighlight(cursorLocation[0], cursorLocation[1]);
+			drawHighlight(cursorLocation[0], cursorLocation[1]);
 
-				drawBackground();
-			}
+			drawBackground();
 		}
 		else {
 			DrawText("Game Over!", windowWidth / 2, windowHeight / 2, 20, RED);
@@ -223,5 +228,6 @@ int main(void) {
 // - random numerot
 //	- tarkista että valid?
 // - nätimpi highlight DONE
-// - highlight row ja column + muut samat numerot
+// - highlight row ja column DONE
+// - highlight muut samat numerot DONE
 //
