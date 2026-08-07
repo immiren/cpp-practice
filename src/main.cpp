@@ -180,7 +180,25 @@ int main(void) {
 				// switch modes: pen/pencil
 				if (cells[cursorLocation[0]][cursorLocation[1]].prefilled == false) {
 					if (takingNotes) cells[cursorLocation[0]][cursorLocation[1]].notes[input - 1] = !cells[cursorLocation[0]][cursorLocation[1]].notes[input - 1];
-					else cells[cursorLocation[0]][cursorLocation[1]].value = input;
+					else {
+						// check for conflicts
+						bool isConflicting = false;
+						for (int x = 0; x < cellCountX; x++) {
+							if (x != cursorLocation[0] && cells[x][cursorLocation[1]].value == input) {
+								isConflicting = true; 
+								DrawText("ongelma x", 10, 10, 400, RED);
+							}
+						}
+						if (!isConflicting) {
+							for (int y = 0; y < cellCountY; y++) {
+								if (y != cursorLocation[1] && cells[cursorLocation[0]][y].value == input) isConflicting = true;
+							}
+						}
+						if (!isConflicting) {
+							cells[cursorLocation[0]][cursorLocation[1]].value = input;
+						}
+						else input = 0;
+					}
 				}
 			}
 
