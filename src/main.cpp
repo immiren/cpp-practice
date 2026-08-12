@@ -2,12 +2,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+//#include "sudokuGenerator.h"
+#include "config.h"
 
 using namespace std;
 
 int cellSize = 100;	// size in px
-const int cellCountX = 9;
-const int cellCountY = 9;
 
 struct Cell {
 	int value = 0; // 0 = empty
@@ -15,9 +15,9 @@ struct Cell {
 	bool notes[9] = { false,false,false,false,false,false,false,false,false };
 };
 
-Cell cells[cellCountX][cellCountY];
+Cell cells[cellCount][cellCount];
 
-int cellNumbers[cellCountX][cellCountY] = {
+int cellNumbers[cellCount][cellCount] = {
 	{0,1,0,0,0,4,0,0,0},
 	{4,2,0,0,0,0,0,0,0},
 	{0,3,0,0,0,0,4,0,0},
@@ -36,8 +36,8 @@ bool gameOver = false;
 bool takingNotes = false;
 
 static void fillCells() {
-	for (int x = 0; x < cellCountX; x++) {
-		for (int y = 0; y < cellCountY; y++) {
+	for (int x = 0; x < cellCount; x++) {
+		for (int y = 0; y < cellCount; y++) {
 			bool prefilled = false;
 			if (cellNumbers[x][y] != 0) prefilled = true;
 
@@ -56,8 +56,8 @@ static void drawHighlight(int posX, int posY) {
 	if (takingNotes) c = { 234, 184, 255, 255 };
 
 	// row & cell highlight
-	DrawRectangle(posX * cellSize, 0, cellSize, cellCountX * cellSize, { 230,230,230,255 });
-	DrawRectangle(0, posY * cellSize, cellCountX * cellSize, cellSize, {230,230,230,255});
+	DrawRectangle(posX * cellSize, 0, cellSize, cellCount * cellSize, { 230,230,230,255 });
+	DrawRectangle(0, posY * cellSize, cellCount * cellSize, cellSize, {230,230,230,255});
 	
 	// main highlight
 	DrawRectangle(posX * cellSize, posY * cellSize, cellSize, cellSize, c);
@@ -102,7 +102,7 @@ void drawCell(int posX, int posY) {
 	}
 	else {
 		// draw notes
-		for (int n = 0; n < cellCountX; n++) {
+		for (int n = 0; n < cellCount; n++) {
 			if (cells[posX][posY].notes[n] == true) {
 				// draw note
 				int noteX;
@@ -128,8 +128,8 @@ void drawCell(int posX, int posY) {
 }
 
 void drawBackground() {
-	for (int x = 0; x < cellCountX; x++) {
-		for (int y = 0; y < cellCountY; y++) {			
+	for (int x = 0; x < cellCount; x++) {
+		for (int y = 0; y < cellCount; y++) {			
 			drawCell(x, y);
 		}
 	}
@@ -139,8 +139,8 @@ int main(void) {
 	// window
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	SetTargetFPS(60);
-	int windowWidth = cellSize * cellCountX;
-	int windowHeight = cellSize * cellCountY ;
+	int windowWidth = cellSize * cellCount;
+	int windowHeight = cellSize * cellCount ;
 	InitWindow(windowWidth, windowHeight, "Sudoku");
 
 	Vector2 direction = { 1, 0 };
@@ -183,14 +183,14 @@ int main(void) {
 					else {
 						// check for conflicts
 						bool isConflicting = false;
-						for (int x = 0; x < cellCountX; x++) {
+						for (int x = 0; x < cellCount; x++) {
 							if (x != cursorLocation[0] && cells[x][cursorLocation[1]].value == input) {
 								isConflicting = true; 
 								DrawText("ongelma x", 10, 10, 400, RED);
 							}
 						}
 						if (!isConflicting) {
-							for (int y = 0; y < cellCountY; y++) {
+							for (int y = 0; y < cellCount; y++) {
 								if (y != cursorLocation[1] && cells[cursorLocation[0]][y].value == input) isConflicting = true;
 							}
 						}
@@ -207,10 +207,10 @@ int main(void) {
 			if (timer <= 0) {
 				timer += moveTimeDuration;
 				
-				if (cursorLocation[0] + direction.x < cellCountX && cursorLocation[0] + direction.x >= 0) {
+				if (cursorLocation[0] + direction.x < cellCount && cursorLocation[0] + direction.x >= 0) {
 					cursorLocation[0] += direction.x;
 				}
-				if (cursorLocation[1] + direction.y < cellCountX && cursorLocation[1] + direction.y >= 0) {
+				if (cursorLocation[1] + direction.y < cellCount && cursorLocation[1] + direction.y >= 0) {
 					cursorLocation[1] += direction.y;
 				}
 			}
