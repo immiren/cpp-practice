@@ -1,9 +1,10 @@
+#pragma once
 #include <raylib.h>
 #include <iostream>
 #include <vector>
 #include <string>
-//#include "sudokuGenerator.h"
 #include "config.h"
+#include "sudokuGenerator.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ struct Cell {
 
 Cell cells[cellCount][cellCount];
 
-int cellNumbers[cellCount][cellCount] = {
+NumberGrid cellNumbers[cellCount][cellCount] = {
 	{0,1,0,0,0,4,0,0,0},
 	{4,2,0,0,0,0,0,0,0},
 	{0,3,0,0,0,0,4,0,0},
@@ -147,6 +148,8 @@ int main(void) {
 
 	const float moveTimeDuration = 0.1;
 	float timer = moveTimeDuration;
+
+	//cellNumbers = generateCompleteSudoku();
 	
 	fillCells();
 
